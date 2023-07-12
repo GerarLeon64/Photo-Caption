@@ -25,8 +25,16 @@ const User = sequelize.define('user', {
     timestamps: false
 });
 
-User.sync( { force: true }).then(() => {
-    console.log('Table and model synced successfully!');
-}).catch((err) => {
+User.sync( { alter: true }).then(() => {
+    // working with our updated table
+    return User.create({
+        username: 'Jimmy',
+        password: '456'
+    });
+}).then((data) => {
+    console.log(data.toJSON());
+    console.log('User added to database!');
+})
+.catch((err) => {
     console.log(err);
 })
