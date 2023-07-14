@@ -25,21 +25,6 @@ const User = sequelize.define('user', {
     timestamps: false
 });
 
-const Image = sequelize.define('image', {
-    id: {
-        type: Sequelize.DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    captionId: {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: true
-    }
-}, {
-    freezeTableName: true,
-    timestamps: false
-});
-
 const Caption = sequelize.define('caption', {
     id: {
         type: Sequelize.DataTypes.INTEGER,
@@ -50,9 +35,9 @@ const Caption = sequelize.define('caption', {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false
     },
-    imageId: {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: true
+    image: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false
     },
     descripton: {
         type: Sequelize.DataTypes.STRING,
@@ -72,14 +57,9 @@ User.hasMany(Caption, {
 });
 Caption.belongsTo(User);
 
-Caption.hasOne(Image, {
-    foreignKey: 'captionId'
-});
-Image.belongsTo(Caption);
-
-Image.sync( { alter: true }).then(() => {
+Caption.sync( { alter: true }).then(() => {
     // working with our updated table
-    return Image.findAll();
+    return Caption.findAll();
 }).then((data) => {
     data.forEach(element => {
         console.log(element.toJSON());
