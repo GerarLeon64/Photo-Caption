@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
 
 const sequelize = new Sequelize('photos', 'postgres', 'postgres', {
     host: 'localhost',
@@ -14,11 +15,20 @@ const User = sequelize.define('user', {
     },
     username: {
         type: Sequelize.DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        get() {
+            const rawValue = this.getDataValue('username');
+            return rawValue;
+        }
     },
     password: {
         type: Sequelize.DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        set(value) {
+            const salt = bcrypt.genSaltSync(12);
+            const hash = bcrypt.hashSync(value, salt);
+            this.setDataValue('password', hash);
+        }
     }
 }, {
     freezeTableName: true,
@@ -42,10 +52,6 @@ const Caption = sequelize.define('caption', {
     descripton: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
-    },
-    password: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false
     }
 }, {
     freezeTableName: true,
@@ -59,11 +65,11 @@ Caption.belongsTo(User);
 
 Caption.sync( { alter: true }).then(() => {
     // working with our updated table
-    return Caption.findAll();
-}).then((data) => {
-    data.forEach(element => {
-        console.log(element.toJSON());
-    })
+    return Caption.create({
+        userId: 1,
+        image: 'cat',
+        description: 'a lovely cat'
+    });
 })
 .catch((err) => {
     console.log(err);
