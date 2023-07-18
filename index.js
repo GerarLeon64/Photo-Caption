@@ -41,15 +41,11 @@ const Caption = sequelize.define('caption', {
         primaryKey: true,
         autoIncrement: true
     },
-    userId: {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: false
-    },
     image: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
     },
-    descripton: {
+    description: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
     }
@@ -58,18 +54,12 @@ const Caption = sequelize.define('caption', {
     timestamps: false
 });
 // setting up one-to-many and one-to-one relationships
-User.hasMany(Caption, {
-    foreignKey: 'userId'
-});
-Caption.belongsTo(User);
+User.hasMany(Caption);
+Caption.hasOne(User);
 
 Caption.sync( { alter: true }).then(() => {
     // working with our updated table
-    return Caption.create({
-        userId: 1,
-        image: 'cat',
-        description: 'a lovely cat'
-    });
+
 })
 .catch((err) => {
     console.log(err);
